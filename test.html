@@ -4,58 +4,60 @@
 <meta charset="UTF-8">
 <title>Vancouver Traffic Dashboard</title>
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background: #f5f5f5;
-  }
-  h2 {
-    text-align: center;
-    margin: 10px 0;
-    font-size: 18px;
-  }
-  .container {
-    display: flex;
-    flex-direction: column; /* top/bottom layout */
-    gap: 15px;
-    padding: 10px;
-  }
+  body { font-family: Arial, sans-serif; margin:0; padding:10px; background:#f5f5f5; }
+
+  h2 { text-align:center; font-size:18px; margin:10px 0; }
+
   .iframe-wrapper {
     width: 100%;
-    height: 500px; /* visible viewport height */
     overflow: hidden;
     position: relative;
-    border: 1px solid #ccc;
-    border-radius: 6px;
+    border:1px solid #ccc;
+    border-radius:6px;
+    margin-bottom:15px;
   }
-  .iframe-wrapper iframe {
+
+  /* Cropped TomTom summary */
+  #tomtom-wrapper {
+    height: 800px; /* visible height */
+  }
+  #tomtom-wrapper iframe {
     position: absolute;
-    top: 0;
+    top: 0;      /* adjust to crop top */
+    left: 0;     /* adjust horizontal if needed */
+    width: 2000px;  /* full width of TomTom page */
+    height: 2000px; /* full height of TomTom page */
+    border:0;
+  }
+
+  /* Cropped TrafficNet */
+  #trafficnet-wrapper {
+    height: 800px; /* visible height */
+  }
+  #trafficnet-wrapper iframe {
+    position: absolute;
+    top: -150px; /* shift up to hide the map if it's on top */
     left: 0;
     width: 100%;
-    height: 1200px; /* total height of iframe */
-    border: 0;
+    height: 1200px; /* full height of page */
+    border:0;
   }
 </style>
 </head>
 <body>
 
 <h2>Vancouver Traffic Dashboard</h2>
-<div class="container">
-  
-  <!-- TomTom Traffic -->
-  <h2>TomTom Traffic</h2>
-  <div class="iframe-wrapper">
-    <iframe src="https://www.tomtom.com/traffic-index/vancouver-traffic/"></iframe>
-  </div>
 
-  <!-- TrafficNet Rogers -->
-  <h2>Rogers Traffic Updates</h2>
-  <div class="iframe-wrapper">
-    <iframe src="https://api.trafficnet.ca/html/rogerspage.aspx?key=cuspu3ew"></iframe>
-  </div>
+<!-- TomTom Cropped -->
+<h2>TomTom Traffic Summary</h2>
+<div id="tomtom-wrapper" class="iframe-wrapper">
+  <iframe src="https://www.tomtom.com/traffic-index/vancouver-traffic/"></iframe>
+</div>
 
+<!-- TrafficNet Cropped -->
+<h2>Rogers Traffic Updates</h2>
+<div id="trafficnet-wrapper" class="iframe-wrapper">
+  <iframe src="https://api.trafficnet.ca/html/rogerspage.aspx?key=cuspu3ew" scrolling="yes"></iframe>
 </div>
 
 </body>
