@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Vancouver Hourly Weather</title>
+  <style>
+    body { 
+      font-family: Arial, sans-serif; 
+      padding: 5px; 
+      background: #f8f9fa; 
+      font-size: 13px;
+    }
+    h2 { 
+      margin: 5px 0 10px 0; 
+      font-size: 16px; 
+      text-align: center;
+    }
+    .hourly {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 6px;
+    }
+    .card {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 6px;
+      text-align: center;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+    }
+    .card h4 {
+      margin: 2px 0;
+      font-size: 13px;
+    }
+    .card .icon {
+      font-size: 1.6em;
+      margin: 2px 0;
+    }
+    .card strong {
+      font-size: 14px;
+      display: block;
+      margin: 2px 0;
+    }
+    .card small {
+      font-size: 11px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <h2>Vancouver Weather (5 AM – 7 PM)</h2>
+  <div id="weather" class="hourly">Loading...</div>
+
+  <script>
+    const weatherIcons = {
+      0: {icon:"☀️", desc:"Clear"},
+      1: {icon:"🌤️", desc:"Mostly clear"},
+      2: {icon:"⛅", desc:"Partly cloudy"},
+      3: {icon:"☁️", desc:"Overcast"},
+      45: {icon:"🌫️", desc:"Fog"},
+      48: {icon:"🌫️", desc:"Rime fog"},
+      51: {icon:"🌦️", desc:"Light drizzle"},
+      53: {icon:"🌦️", desc:"Drizzle"},
+      55: {icon:"🌧️", desc:"Heavy drizzle"},
+      61: {icon:"🌦️", desc:"Light rain"},
+      63: {icon:"🌧️", desc:"Rain"},
+      65: {icon:"🌧️", desc:"Heavy rain"},
+      71: {icon:"🌨️", desc:"Snow"},
+      73: {icon:"🌨️", desc:"Snow"},
+      75: {icon:"❄️", desc:"Heavy snow"},
+      80: {icon:"🌧️", desc:"Showers"},
+      81: {icon:"🌧️", desc:"Showers"},
+      82: {icon:"🌧️", desc:"Violent showers"},
+      95: {icon:"⛈️", desc:"Thunder"},
+      96: {icon:"⛈️", desc:"Thunder + hail"},
+      99: {icon:"⛈️", desc:"Severe storm"}
+    };
+
+    async function getWeather() {
+      const url = "https://api.open-meteo.com/v1/forecast?latitude=49.2827&longitude=-123.1207&hourly=temperature_2m,weathercode,precipitation_probability,relativehumidity_2m&forecast_days=1&timezone=auto";
+      const res = await fetch(url);
+      const data = await res.json();
+
+      const container = document.getElementById("weather");
+      container.innerHTML = "";
+
+      const hours = data.hourly.time;
+      const temps = data.hourly.temperature_2m;
+      const codes = data.hourly.weathercode;
+      const prec = data.hourly.precipitation_probability;
+      const humid = data.hourly.relativehumidity_2m;
+
+      hours.forEach((time, i) => {
+        const date = new Date(time);
+        const hour = date.getHours();
+
+        if (hour >= 5 && hour <= 19) {
+          const card = document.createElement("div");
+          card.className = "card";
+
+          const displayHour = date.toLocaleTimeString([], {hour: '2-digit'});
+          const w = weatherIcons[codes[i]] || {icon:"❓", desc:"N/A"};
+
+          card.innerHTML = `
+            <h4>${displayHour}</h4>
+            <div class="icon">${w.icon}</div>
+            <strong>${temps[i]}°C</strong>
+            <small>${w.desc}</small><br>
+            <small>💧 ${prec[i] ?? 0}%</small><br>
+            <small>Hum: ${humid[i]}%</small>
+          `;
+
+          container.appendChild(card);
+        }
+      });
+    }
+
+    getWeather();
+  </script>
+</body>
+</html>
